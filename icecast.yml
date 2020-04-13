@@ -1,0 +1,32 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: icecast
+spec:
+  containers:
+    - image: moul/icecast
+      name: icecast-srv
+      command: ["sudo", "-Eu", "icecast2", "icecast2", "-n", "-c", "/etc/icecast2/icecast.xml"]
+      ports:
+        - containerPort: 8000
+          hostPort: 8000
+          protocol: tcp
+      volumeMounts:
+        - name: icecast-config
+          mountPath: /etc/icecast2
+
+    - image: scouball/icecast-ldap
+      name: icecast-auth
+      env:
+        - name: ICECAST_AUTH_LDAP_SRV
+          value: ldap
+        - name: ICECAST_AUTH_LDAP_DN
+          value: ou=people,dc=example,dc=de
+        - name: ICECAST_AUTH_LDAP_SECURE
+          value: true
+
+  volumes:
+    - name: icecast-config
+      hostPath:
+        path: icecast
+        type: Directory
