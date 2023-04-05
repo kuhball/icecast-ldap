@@ -6,7 +6,6 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"strings"
 )
 
 type user struct {
@@ -50,14 +49,8 @@ func ldapCheck(user user) bool {
 func handler(w http.ResponseWriter, r *http.Request) {
 	var user user
 
-	passUser := strings.SplitN(r.FormValue("pass"), ":", 2)
-	if len(passUser) == 2 {
-		user.name = passUser[0]
-		user.password = passUser[1]
-	} else {
-		w.Header().Set("Icecast-Auth-Message", "Please provide user name in form of 'user:name'")
-		return
-	}
+	user.name = r.FormValue("user")
+	user.password = r.FormValue("pass")
 
 	if ldapCheck(user) {
 		w.Header().Set("icecast-auth-user", "1")
