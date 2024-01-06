@@ -33,6 +33,7 @@ func ldapCheck(user user) bool {
 		l, err = ldap.Dial("tcp", os.Getenv("ICECAST_AUTH_LDAP_SRV")+":389")
 		check(err)
 	}
+	defer l.Close()
 
 	err := l.Bind("uid="+user.name+","+os.Getenv("ICECAST_AUTH_LDAP_DN"), user.password)
 	if err != nil {
